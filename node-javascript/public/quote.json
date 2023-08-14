@@ -1,0 +1,68 @@
+{
+  "id": "Q1277569067",
+  "creationDateTime": "2023-08-09T13:47:36+02:00",
+  "effectiveDate": "2023-09-15",
+  "product": {
+    "id": 3,
+    "name": "Axa Autos",
+    "addon": false,
+    "vendor": {
+      "id": 1,
+      "name": "Axa"
+    },
+    "modality": {
+      "name": "AXA AutoProtect - Terceros con IRL",
+      "category": {
+        "name": "Terceros Ampliado"
+      },
+      "rating": 2
+    },
+    "imageUrl": "https://app-pre.avant2.es/assets/company/1/logo.svg",
+    "config": {
+      "id": 152057,
+      "name": "613226 - Pruebas AUTOPROTEC",
+      "favorite": false
+    }
+  },
+  "paymentMethod": {
+    "id": "Company",
+    "name": "Compañía",
+    "description": "Bancario por la compañía de seguros",
+    "default": false
+  },
+  "paymentFrequency": {
+    "id": "Annual",
+    "name": "Anual",
+    "description": "Una vez al año",
+    "installments": 1
+  },
+  "links": [
+    {
+      "name": "Información del producto",
+      "url": "https://pre.avant2.es:443/avant/assets/productcompany/3/axaProductId1_policy.pdf"
+    }
+  ],
+  "downPayment": 366.26,
+  "premium": 366.26,
+  "termMonths": 12,
+  "brokerFee": 15,
+  "estimate": false,
+  "referenceFromVendor": "102070767",
+  "actions": [
+    {
+      "id": "ReRate",
+      "required": true
+    }
+  ],
+  "policyApplicationSupported": true,
+  "compatibleAddonQuotes": [
+    {
+      "$ref": "#/addonQuotes/0",
+      "id": "Q1277569033"
+    },
+    {
+      "$ref": "#/addonQuotes/1",
+      "id": "Q1277569032"
+    }
+  ]
+}

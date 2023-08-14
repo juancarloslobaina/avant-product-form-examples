@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Product Form Library Demo</title>
+    <%- include('../partials/head'); %>
+  </head>
+
+  <body>
+    <main class="container">
+      <div class="px-4 py-5 my-5 text-center">
+        <img class="d-block mx-auto mb-4" src="/public/logo-avnt2.svg" />
+        <h1 class="display-5 fw-bold text-body-emphasis">
+          Product Form Library Demo
+        </h1>
+        <div class="col-lg-6 mx-auto">
+          <p class="lead mb-4">
+            Public demo to show how Product Form Library works using pure
+            javascript. You can see more information in our
+            <a
+              href="https://portal.api-int.codeoscopic.io/#overview--integrate-it-in-your-frontend"
+              target="_blank"
+            >
+              api portal</a
+            >. Select which demo you want to see.
+          </p>
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/demo1" class="btn btn-primary btn-lg px-4 gap-3">
+              You want to modify the product options of a quote
+            </a>
+            <a href="/demo2" class="btn btn-primary btn-lg px-4">
+              You want to override the default product options
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+
+  <%- include('../partials/footer'); %>
+</html>

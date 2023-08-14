@@ -1,0 +1,154 @@
+<html>
+  <head>
+    <title>
+      Product Form Library Demo - You want to override the default product
+      options
+    </title>
+    <%- include('../partials/head'); %>
+  </head>
+
+  <body>
+    <main class="container">
+      <div class="px-4 pt-5 my-5 text-center">
+        <img class="d-block mx-auto mb-4" src="/public/logo-avnt2.svg" />
+        <h1 class="display-5 fw-bold text-body-emphasis">
+          Product Form Library Demo
+        </h1>
+        <div class="col-lg-6 mx-auto mb-4">
+          <p class="lead">You want to override the default product options</p>
+          <p>
+            using
+            <a
+              href="/public/insurance.json"
+              target="_blank"
+              style="text-decoration: none"
+              ><mark>public/insurance.json</mark></a
+            >
+            and
+            <a
+              href="/public/product.json"
+              target="_blank"
+              style="text-decoration: none"
+              ><mark>public/product.json</mark></a
+            >
+            files
+          </p>
+        </div>
+      </div>
+
+      <div class="px-4">
+        <div class="card" id="product-form-card">
+          <div class="card-body">
+            <div id="product-form-iframe"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 d-md-flex justify-content-md-end">
+        <button
+          id="get-options-btn"
+          type="button"
+          class="btn btn-primary my-2"
+          onClick="getProductFormOptions()"
+          disabled
+        >
+          Get product options
+        </button>
+      </div>
+
+      <div class="px-4 pt-2 pb-5">
+        <div id="alert-error" class="alert alert-danger" style="display: none">
+          A simple danger alert—check it out!
+        </div>
+        <div
+          id="alert-response"
+          class="alert alert-light py-1"
+          style="background-color: #2a2f3a; display: none"
+        >
+          <json-viewer id="json"></json-viewer>
+        </div>
+      </div>
+    </main>
+  </body>
+
+  <%- include('../partials/footer'); %>
+  <script
+    async
+    src="https://<%= process.env.CLIENT_PRODUCT_FORM_DOMAIN %>/js.js"
+  ></script>
+  <script>
+    const getOptionsBtn = document.querySelector("#get-options-btn");
+    let productForm;
+
+    window.avantProductFormInit = () => {
+      console.log("Avant Product Form Initialized");
+
+      // Create new instance of AvantProductForm on the div with id "product-form-iframe"
+      productForm = new AvantProductForm(
+        // Set the id of the div where the iframe will be rendered
+        "product-form-iframe",
+        // Set the data callback function
+        (request) => {
+          return fetch("/api/product-form-requests", {
+            method: "POST",
+            body: JSON.stringify(request),
+            headers: {
+              "Content-Type": "application/json",
+              // Set the authorization header with your backend auth token if it is needed
+              // Authorization: "your_backend_auth_token",
+            },
+          }).then(async (res) => {
+            const response = await res.json();
+            if (res.status === 200) {
+              return response;
+            }
+            throw new Error(String(response.message || response.error));
+          });
+        }
+      );
+
+      // Get quote from json file
+      Promise.all([
+        fetch("/public/insurance.json"),
+        fetch("/public/product.json"),
+      ])
+        .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
+        .then(async ([insurance, product]) => {
+          try {
+            console.log("Using insurance and product objects:", {
+              insurance,
+              product,
+            });
+            // Call render method with insurance and product objects
+            await productForm.render(insurance, product);
+            getOptionsBtn.disabled = false;
+          } catch (error) {
+            alertErrorEl.innerHTML = `Error: ${error}`;
+            alertErrorEl.style.display = "block";
+            getOptionsBtn.style.display = "none";
+            document.querySelector("#product-form-card").style.display = "none";
+            productForm.destroy();
+          }
+        });
+    };
+  </script>
+  <script>
+    const alertErrorEl = document.querySelector("#alert-error");
+    const alertResponseEl = document.querySelector("#alert-response");
+
+    async function getProductFormOptions() {
+      alertResponseEl.style.display = "none";
+      alertErrorEl.style.display = "none";
+
+      try {
+        const values = await productForm.getProductOptions();
+        console.log("Product options:", values);
+        document.querySelector("#json").data = values;
+        alertResponseEl.style.display = "block";
+      } catch (error) {
+        alertErrorEl.innerHTML = "There are some validation errors.";
+        alertErrorEl.style.display = "block";
+      }
+    }
+  </script>
+</html>
