@@ -3,4 +3,19 @@
   integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
   crossorigin="anonymous"
 ></script>
-<script src="https://unpkg.com/@alenaksu/json-viewer@2.0.0/dist/json-viewer.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsoneditor@10.0.3/dist/jsoneditor.min.js"></script>
+<script>
+  function renderJsonEditor(node, jsonData, options) {
+    const editor = new JSONEditor(node, {
+      mode: "code",
+      mainMenuBar: false,
+      statusBar: false,
+      navigationBar: false,
+      enableSort: false,
+      enableTransform: false,
+      ...options,
+    });
+    editor.set(jsonData);
+    return editor;
+  }
+</script>

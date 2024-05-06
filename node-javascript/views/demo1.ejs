@@ -16,49 +16,105 @@
         </h1>
         <div class="col-lg-6 mx-auto mb-4">
           <p class="lead">You want to modify the product options of a quote</p>
-          <p>
-            using
-            <a
-              href="/public/quote.json"
-              target="_blank"
-              style="text-decoration: none"
-              ><mark>public/quote.json</mark></a
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="quote-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#quote"
+                type="button"
+                role="tab"
+                aria-controls="quote"
+                aria-selected="true"
+              >
+                Quote Object
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div
+              class="tab-pane fade show active"
+              id="quote"
+              role="tabpanel"
+              aria-labelledby="quote-tab"
             >
-            file
-          </p>
-        </div>
-      </div>
+              <div class="alert alert-primary mt-3" role="alert">
+                <b>See:</b>
+                <a
+                  href="https://portal.api-int.codeoscopic.io/#get-/insurances"
+                  target="_blank"
+                  >Search for insurance projects</a
+                >
+                or
+                <a
+                  href="https://portal.api-int.codeoscopic.io/#get-/insurances/-id-/offers/-offerId-"
+                  target="_blank"
+                  >Retrieve an insurance offer</a
+                >
+                <code>mainQuotes</code> and <code>addonQuotes</code>
+                on API Portal
+              </div>
 
-      <div class="px-4">
-        <div class="card" id="product-form-card">
-          <div class="card-body">
-            <div id="product-form-iframe"></div>
+              <div id="quote-editor" style="height: 400px"></div>
+            </div>
+          </div>
+          <hr />
+          <div class="col-lg-6 mx-auto">
+            <div class="mb-3">
+              <label for="form-type" class="form-label"
+                >Form type to render</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="form-type"
+                value="ReRating"
+              />
+              <div id="emailHelp" class="form-text">
+                <b>Allowed:</b> ReRating, PolicyApplication
+              </div>
+            </div>
+            <button
+              id="render-product-form-btn"
+              type="button"
+              class="btn btn-primary my-2"
+              onClick="renderProductForm()"
+            >
+              Render product form
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="px-4 d-md-flex justify-content-md-end">
-        <button
-          id="get-options-btn"
-          type="button"
-          class="btn btn-primary my-2"
-          onClick="getProductFormOptions()"
-          disabled
-        >
-          Get product options
-        </button>
-      </div>
-
-      <div class="px-4 pt-2 pb-5">
-        <div id="alert-error" class="alert alert-danger" style="display: none">
-          A simple danger alert—check it out!
+      <div id="product-form-wrapper" style="display: none">
+        <div class="px-4">
+          <div class="card" id="product-form-card">
+            <div class="card-body">
+              <div id="product-form-iframe"></div>
+            </div>
+          </div>
         </div>
-        <div
-          id="alert-response"
-          class="alert alert-light py-1"
-          style="background-color: #2a2f3a; display: none"
-        >
-          <json-viewer id="json"></json-viewer>
+
+        <div class="px-4 d-md-flex justify-content-md-end">
+          <button
+            id="get-options-btn"
+            type="button"
+            class="btn btn-primary my-2"
+            onClick="getProductFormOptions()"
+            disabled
+          >
+            Get product options
+          </button>
+        </div>
+
+        <div class="px-4 pt-2 pb-5">
+          <div
+            id="alert-error"
+            class="alert alert-danger"
+            style="display: none"
+          ></div>
+          <div id="product-options-viewer" style="height: 400px"></div>
         </div>
       </div>
     </main>
@@ -70,8 +126,8 @@
     src="https://<%= process.env.CLIENT_PRODUCT_FORM_DOMAIN %>/js.js"
   ></script>
   <script>
-    const getOptionsBtn = document.querySelector("#get-options-btn");
-    let productForm;
+    const getOptionsBtn = document.getElementById("get-options-btn");
+    let productForm, quoteEditor;
 
     window.avantProductFormInit = () => {
       console.log("Avant Product Form Initialized");
@@ -100,38 +156,68 @@
         }
       );
 
-      // Get quote from json file
-      fetch("/public/quote.json")
-        .then((res) => res.json())
-        .then(async (quote) => {
-          try {
-            console.log("Using quote object:", quote);
-            // Call render method with quote object
-            await productForm.render(quote);
-            getOptionsBtn.disabled = false;
-          } catch (error) {
-            alertErrorEl.innerHTML = `Error: ${error}`;
-            alertErrorEl.style.display = "block";
-            getOptionsBtn.style.display = "none";
-            document.querySelector("#product-form-card").style.display = "none";
-            productForm.destroy();
-          }
-        });
+      quoteEditor = renderJsonEditor(document.getElementById("quote-editor"), {
+        id: "0",
+      });
     };
   </script>
   <script>
-    const alertErrorEl = document.querySelector("#alert-error");
-    const alertResponseEl = document.querySelector("#alert-response");
+    async function renderProductForm() {
+      const formTypeEl = document.getElementById("form-type");
+      const productFormCardEl = document.getElementById("product-form-card");
+      const renderProductFormBtn = document.getElementById(
+        "render-product-form-btn"
+      );
+      const productFormWrapperEl = document.getElementById(
+        "product-form-wrapper"
+      );
+
+      try {
+        productFormWrapperEl.style.display = "block";
+        renderProductFormBtn.disabled = true;
+        alertErrorEl.style.display = "none";
+        productFormCardEl.style.display = "block";
+        getOptionsBtn.style.display = "block";
+
+        const quote = quoteEditor.get();
+        console.log("Using quote object:", quote);
+
+        // Call render method with quote object
+        await productForm.render(quote, formTypeEl.value);
+        getOptionsBtn.disabled = false;
+      } catch (error) {
+        alertErrorEl.innerHTML = `Error: ${error}`;
+        alertErrorEl.style.display = "block";
+        getOptionsBtn.style.display = "none";
+        productFormCardEl.style.display = "none";
+      } finally {
+        renderProductFormBtn.disabled = false;
+      }
+    }
+  </script>
+  <script>
+    const alertErrorEl = document.getElementById("alert-error");
+    const productOptionsViewerEl = document.getElementById(
+      "product-options-viewer"
+    );
+    let productOptionsEditor;
 
     async function getProductFormOptions() {
-      alertResponseEl.style.display = "none";
       alertErrorEl.style.display = "none";
 
       try {
         const values = await productForm.getProductOptions();
         console.log("Product options:", values);
-        document.querySelector("#json").data = values;
-        alertResponseEl.style.display = "block";
+        if (!productOptionsEditor) {
+          productOptionsEditor = renderJsonEditor(
+            productOptionsViewerEl,
+            values,
+            { mode: "view" }
+          );
+          productOptionsEditor.expandAll();
+        } else {
+          productOptionsEditor.update(values);
+        }
       } catch (error) {
         alertErrorEl.innerHTML = "There are some validation errors.";
         alertErrorEl.style.display = "block";
