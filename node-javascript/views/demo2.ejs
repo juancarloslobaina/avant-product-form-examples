@@ -8,14 +8,17 @@
   </head>
 
   <body>
+    <%- include('../partials/navbar'); %>
     <main class="container">
-      <div class="px-4 pt-5 my-5 text-center">
+      <div class="px-4 pt-5 my-5">
         <img class="d-block mx-auto mb-4" src="/public/logo-avnt2.svg" />
-        <h1 class="display-5 fw-bold text-body-emphasis">
+        <h1 class="display-5 fw-bold text-body-emphasis text-center">
           Product Form Library Demo
         </h1>
         <div class="col-lg-6 mx-auto mb-4">
-          <p class="lead">You want to override the default product options</p>
+          <p class="lead text-center">
+            You want to override the default product options
+          </p>
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
               <button
@@ -85,7 +88,18 @@
             </div>
           </div>
           <hr />
-          <div class="col-lg-6 mx-auto">
+          <div class="mx-auto">
+            <div class="mb-3">
+              <label for="x-user-email" class="form-label"
+                >Email of the user to execute the request in behalf of</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="x-user-email"
+                placeholder="X-User-Email"
+              />
+            </div>
             <button
               id="render-product-form-btn"
               type="button"
@@ -154,6 +168,7 @@
             body: JSON.stringify(request),
             headers: {
               "Content-Type": "application/json",
+              "X-User-Email": document.getElementById("x-user-email").value,
               // Set the authorization header with your backend auth token if it is needed
               // Authorization: "your_backend_auth_token",
             },
@@ -179,6 +194,14 @@
           },
         }
       );
+
+      fetch(
+        "https://int.avant2.es/avant/apidoc/examples/car/quotation-request.json"
+      )
+        .then((response) => response.json())
+        .then((defaultInsurance) => {
+          insuranceEditor.update(defaultInsurance.value);
+        });
     };
   </script>
   <script>
@@ -235,7 +258,7 @@
           productOptionsEditor = renderJsonEditor(
             productOptionsViewerEl,
             values,
-            { mode: "view" }
+            { mode: "preview" }
           );
           productOptionsEditor.expandAll();
         } else {

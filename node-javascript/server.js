@@ -34,7 +34,7 @@ app.post("/api/product-form-requests", async function (req, res) {
         "Content-Type": "application/json",
         Accept: "application/vnd.codeoscopic.v1+json",
         Authorization: `Bearer ${accessToken}`,
-        "X-User-Email": process.env.SERVER_X_USER_EMAIL,
+        "X-User-Email": req.headers["x-user-email"],
       },
       body: JSON.stringify(req.body),
     }
@@ -53,7 +53,9 @@ app.get("/*", function (req, res) {
 });
 
 (async () => {
-  console.log(`requesting new access token from ${process.env.SERVER_API_URL}`);
+  console.log(
+    `requesting new access token from ${process.env.SERVER_API_URL}...`
+  );
 
   // Fetch access token before starting the server
   const response = await fetch(`${process.env.SERVER_API_URL}/oauth2/token`, {
@@ -72,7 +74,7 @@ app.get("/*", function (req, res) {
     accessToken = response.access_token;
     console.log("got new access token");
     app.listen(8080);
-    console.log("server is listening on port 8080");
+    console.log("server is running on port http://localhost:8080");
   } else {
     console.log("unable to get access token.");
     process.exit(1);
