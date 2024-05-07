@@ -222,9 +222,8 @@
           productOptionsEditor = renderJsonEditor(
             productOptionsViewerEl,
             values,
-            { mode: "view" }
+            { mode: "preview" }
           );
-          productOptionsEditor.expandAll();
         } else {
           productOptionsEditor.update(values);
         }

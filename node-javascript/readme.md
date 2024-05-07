@@ -7,6 +7,6 @@
 
 ### How to run
 
-Edit `.env` file and set the `SERVER_CLIENT_ID`, `SERVER_CLIENT_SECRET`, and `SERVER_X_USER_EMAIL` variables.
+Edit `.env` file and set the `SERVER_CLIENT_ID` and `SERVER_CLIENT_SECRET` variables.
 
-Then run `npm install` and then `npm start` to start the server. The server will be running on port 8080.
+Then run `npm install` and then `npm start` to start the server.

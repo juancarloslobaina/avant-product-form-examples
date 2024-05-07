@@ -73,8 +73,11 @@ app.get("/*", function (req, res) {
   if ("access_token" in response && typeof response.access_token === "string") {
     accessToken = response.access_token;
     console.log("got new access token");
-    app.listen(8080);
-    console.log("server is running on port http://localhost:8080");
+    const server = app.listen(0, () => {
+      console.log(
+        `server is running on port http://localhost:${server.address().port}`
+      );
+    });
   } else {
     console.log("unable to get access token.");
     process.exit(1);
