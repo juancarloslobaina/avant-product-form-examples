@@ -73,7 +73,7 @@ app.get("/*", function (req, res) {
   if ("access_token" in response && typeof response.access_token === "string") {
     accessToken = response.access_token;
     console.log("got new access token");
-    const server = app.listen(0, () => {
+    const server = app.listen(8000, () => {
       console.log(
         `server is running on port http://localhost:${server.address().port}`
       );
